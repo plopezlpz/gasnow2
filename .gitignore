@@ -3,3 +3,4 @@
 bin
 .env
 public
+*.zip
