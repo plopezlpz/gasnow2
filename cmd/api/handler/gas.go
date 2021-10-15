@@ -11,17 +11,17 @@ import (
 
 type Gas struct {
 	gasServer gas.Server
-	upgrader  websocket.Upgrader
+	upgrader  *websocket.Upgrader
 }
 
-func NewGas(infuraUrl string) *Gas {
-	return &Gas{
+func NewGas(infuraUrl string, upgrader *websocket.Upgrader) Gas {
+	return Gas{
 		gasServer: gas.NewServer(infuraUrl),
-		upgrader:  websocket.Upgrader{},
+		upgrader:  upgrader,
 	}
 }
 
-func (g *Gas) GetPrice(c echo.Context) error {
+func (g Gas) GetPrice(c echo.Context) error {
 	ws, err := g.upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
 		return err
@@ -46,7 +46,7 @@ func (g *Gas) GetPrice(c echo.Context) error {
 	}
 }
 
-func (g Gas) GetPriceV1(c echo.Context) error {
+func (g Gas) GetPriceRest(c echo.Context) error {
 	gasPrices, err := g.gasServer.GetGasPrice()
 	if err != nil {
 		return err

@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
+	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -38,6 +40,7 @@ func run() error {
 	infuraUrl := fmt.Sprintf("%s/%s", infuraHost, infuraProject)
 
 	e := echo.New()
+	e.Use(middleware.CORS()) // TODO restrict
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Skipper: func(c echo.Context) bool {
 			return c.Path() == "/ws"
@@ -47,6 +50,12 @@ func run() error {
 	e.Use(middleware.RequestID())
 
 	e.Logger.SetLevel(log.WARN)
-	routes(e, handler.NewGas(infuraUrl))
+
+	wsUpgrader := websocket.Upgrader{}
+	wsUpgrader.CheckOrigin = func(r *http.Request) bool {
+		return true // TODO restrict
+	}
+
+	routes(e, handler.NewGas(infuraUrl, &wsUpgrader))
 	return e.Start(":" + port)
 }
