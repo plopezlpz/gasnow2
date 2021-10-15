@@ -16,4 +16,5 @@ RUN go build -o /app cmd/api/*.go
 FROM alpine
 WORKDIR /app
 COPY --from=builder /app ./
+EXPOSE 5000
 CMD ["./app"]

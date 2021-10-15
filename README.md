@@ -21,6 +21,7 @@ curl http://localhost:5000/health
 wscat -c ws://localhost:5000/ws
 ```
 
+To build the executable
 ### Build executable:
 ```bash
 # build
@@ -30,11 +31,12 @@ make build
 bin/server
 ```
 
+To build as a docker image
 ### Build with Docker
 ```bash
 # build
 docker build -t gasnow2 .
 
 # run
-docker run -p5000:5000 --env-file=.env gasnow2
+docker run -p5000:5000 --env-file=.env --name gasnow2 gasnow2
 ```
