@@ -29,3 +29,12 @@ make build
 # Run the newly built executable
 bin/server
 ```
+
+### Build with Docker
+```bash
+# build
+docker build -t gasnow2 .
+
+# run
+docker run -p5000:5000 --env-file=.env gasnow2
+```
