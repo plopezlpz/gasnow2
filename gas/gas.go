@@ -2,6 +2,7 @@ package gas
 
 import (
 	"errors"
+	"fmt"
 	"sort"
 	"time"
 
@@ -34,11 +35,14 @@ func (s Server) GetGasPrice() (Gas, error) {
 	if err != nil {
 		return Gas{}, err
 	}
+	if len(block.Transactions) < 1 {
+		return Gas{}, fmt.Errorf("no transactions in block %v", numb.ToDecimal(block.Number, 0))
+	}
 	sort.Slice(block.Transactions, func(i, j int) bool {
 		return numb.ToDecimal(block.Transactions[j].Gasprice, 0).LessThan(numb.ToDecimal(block.Transactions[i].Gasprice, 0))
 	})
 
-	timestamp, err := numb.ToTimestamp(block.Timestamp)
+	timestamp, err := numb.ToInt64(block.Timestamp)
 	if err != nil {
 		return Gas{}, err
 	}

@@ -16,7 +16,7 @@ func ToDecimal(hex string, exp int32) decimal.Decimal {
 	return decimal.NewFromBigInt(bi, exp)
 }
 
-func ToTimestamp(hex string) (int64, error) {
+func ToInt64(hex string) (int64, error) {
 	value, err := strconv.ParseInt(hex, 0, 64)
 	if err != nil {
 		return 0, errors.Wrap(err, "parsing timestamp")
