@@ -46,10 +46,19 @@ func (s Server) GetGasPrice() (Gas, error) {
 	if err != nil {
 		return Gas{}, err
 	}
+
+	rapid, err := numb.ToGwei(block.Transactions[len(block.Transactions)/2].Gasprice)
+	if err != nil {
+		return Gas{}, err
+	}
+	fast, err := numb.ToGwei(block.Transactions[len(block.Transactions)-1].Gasprice)
+	if err != nil {
+		return Gas{}, err
+	}
 	newGas := Gas{
 		GasPrices: GasPrice{
-			Rapid: numb.ToDecimal(block.Transactions[len(block.Transactions)/2].Gasprice, -9),
-			Fast:  numb.ToDecimal(block.Transactions[len(block.Transactions)-1].Gasprice, -9),
+			Rapid: rapid,
+			Fast:  fast,
 		},
 		Timestamp: timestamp,
 	}

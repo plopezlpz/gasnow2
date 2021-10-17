@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
@@ -37,6 +38,7 @@ func run() error {
 	if port == "" {
 		port = "5000"
 	}
+	logLevel := parseLogLvl(os.Getenv("LOG_LEVEL"))
 	infuraUrl := fmt.Sprintf("%s/%s", infuraHost, infuraProject)
 
 	e := echo.New()
@@ -49,7 +51,7 @@ func run() error {
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 
-	e.Logger.SetLevel(log.WARN)
+	e.Logger.SetLevel(logLevel)
 
 	wsUpgrader := websocket.Upgrader{}
 	wsUpgrader.CheckOrigin = func(r *http.Request) bool {
@@ -58,4 +60,22 @@ func run() error {
 
 	routes(e, handler.NewGas(infuraUrl, &wsUpgrader))
 	return e.Start(":" + port)
+}
+
+func parseLogLvl(val string) log.Lvl {
+	val = strings.ToUpper(val)
+	switch val {
+	case "DEBUG":
+		return log.DEBUG
+	case "INFO":
+		return log.INFO
+	case "WARN":
+		return log.WARN
+	case "ERROR":
+		return log.ERROR
+	case "OFF":
+		return log.OFF
+	default:
+		return log.ERROR
+	}
 }

@@ -1,6 +1,7 @@
 package numb
 
 import (
+	"fmt"
 	"math/big"
 	"strconv"
 
@@ -11,9 +12,17 @@ import (
 func ToDecimal(hex string, exp int32) decimal.Decimal {
 	bi, ok := new(big.Int).SetString(hex, 0)
 	if !ok {
-		decimal.NewFromInt(0)
+		return decimal.NewFromInt(0)
 	}
 	return decimal.NewFromBigInt(bi, exp)
+}
+
+func ToGwei(hex string) (decimal.Decimal, error) {
+	bi, ok := new(big.Int).SetString(hex, 0)
+	if !ok {
+		return decimal.Decimal{}, fmt.Errorf("converting to gwei")
+	}
+	return decimal.NewFromBigInt(bi, -9).Floor(), nil
 }
 
 func ToInt64(hex string) (int64, error) {
