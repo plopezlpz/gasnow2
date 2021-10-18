@@ -21,7 +21,6 @@ curl http://localhost:5000/health
 wscat -c ws://localhost:5000/ws
 ```
 
-To build the executable
 ### Build executable:
 ```bash
 # build
@@ -31,7 +30,6 @@ make build
 bin/server
 ```
 
-To build as a docker image
 ### Build with Docker
 ```bash
 # build
