@@ -66,7 +66,6 @@ func (w WS) subscribeToGasPrice(ctx context.Context, logger echo.Logger, wg *syn
 
 	go func() {
 		defer wg.Done()
-		defer close(out)
 		for {
 			select {
 			case <-ctx.Done():
@@ -101,7 +100,6 @@ func (w WS) subscribeToCurrencyPrice(ctx context.Context, logger echo.Logger, wg
 
 	go func() {
 		defer wg.Done()
-		defer close(out)
 		for {
 			// Check if any error occurred in any other gorouties:
 			select {
