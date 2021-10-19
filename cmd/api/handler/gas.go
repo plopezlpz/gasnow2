@@ -2,62 +2,33 @@ package handler
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/plopezlpz/gasnow2/gas"
 )
 
 type Gas struct {
 	gasServer gas.Server
-	upgrader  *websocket.Upgrader
 }
 
-func NewGas(infuraUrl string, upgrader *websocket.Upgrader) Gas {
+func NewGas(gasServer gas.Server) Gas {
 	return Gas{
-		gasServer: gas.NewServer(infuraUrl),
-		upgrader:  upgrader,
+		gasServer: gasServer,
 	}
 }
 
-func (g Gas) GetPrice(c echo.Context) error {
-	ws, err := g.upgrader.Upgrade(c.Response(), c.Request(), nil)
-	if err != nil {
-		return err
-	}
-	defer ws.Close()
-	for {
-		gasPrices, err := g.gasServer.GetGasPrice()
-		if err != nil {
-			c.Logger().Error(err)
-			time.Sleep(5 * time.Second)
-			continue
-		}
-		// Write
-		if err := ws.WriteJSON(Resp{
-			Type: "gasprice",
-			Data: gasPrices,
-		}); err != nil {
-			c.Logger().Warnf("connection closed: %v", err)
-			return nil
-		}
-		time.Sleep(5 * time.Second)
-	}
-}
-
-func (g Gas) GetPriceRest(c echo.Context) error {
+func (g Gas) GetGasPrice(c echo.Context) error {
 	gasPrices, err := g.gasServer.GetGasPrice()
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, Resp{
-		Type: "gasprice",
-		Data: gasPrices,
-	})
+	return c.JSON(http.StatusOK, gasPrices)
 }
 
-type Resp struct {
-	Type string  `json:"type,omitempty"`
-	Data gas.Gas `json:"data,omitempty"`
+func (g Gas) GetCurrencyPrice(c echo.Context) error {
+	ethPrice, err := g.gasServer.GetCurrencyPrice("ethereum", "usd")
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, ethPrice)
 }

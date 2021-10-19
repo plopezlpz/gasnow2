@@ -7,19 +7,22 @@ import (
 	"time"
 
 	"github.com/patrickmn/go-cache"
+	"github.com/plopezlpz/gasnow2/coingecko"
 	"github.com/plopezlpz/gasnow2/infura"
 	"github.com/plopezlpz/gasnow2/numb"
 )
 
 type Server struct {
 	infuraClient infura.Client
+	geckoClient  coingecko.Client
 	cache        *cache.Cache
 }
 
-func NewServer(infuraUrl string) Server {
+func NewServer(infuraClient infura.Client, geckoClient coingecko.Client) Server {
 	return Server{
-		infuraClient: infura.NewClient(infuraUrl),
-		cache:        cache.New(7*time.Second, -1),
+		infuraClient: infuraClient,
+		geckoClient:  geckoClient,
+		cache:        cache.New(5*time.Second, -1),
 	}
 }
 
@@ -27,7 +30,7 @@ func (s Server) GetGasPrice() (Gas, error) {
 	if item, exp, found := s.cache.GetWithExpiration("gasprice"); found && time.Now().Before(exp) {
 		gasCached, ok := item.(Gas)
 		if !ok {
-			return Gas{}, errors.New("wrong type in cache")
+			return Gas{}, errors.New("wrong gasprice type in cache")
 		}
 		return gasCached, nil
 	}
@@ -64,4 +67,20 @@ func (s Server) GetGasPrice() (Gas, error) {
 	}
 	s.cache.Set("gasprice", newGas, 0)
 	return newGas, nil
+}
+
+func (s Server) GetCurrencyPrice(currency, vsCurrency string) (coingecko.Price, error) {
+	if item, exp, found := s.cache.GetWithExpiration("currencyprice"); found && time.Now().Before(exp) {
+		currencyPriceCached, ok := item.(coingecko.Price)
+		if !ok {
+			return coingecko.Price{}, errors.New("wrong currencyprice type in cache")
+		}
+		return currencyPriceCached, nil
+	}
+	price, err := s.geckoClient.GetCurrencyPrice(currency, vsCurrency)
+	if err != nil {
+		return coingecko.Price{}, err
+	}
+	s.cache.Set("currencyprice", price, 30*time.Second)
+	return price, nil
 }

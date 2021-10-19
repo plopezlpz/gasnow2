@@ -3,10 +3,11 @@ Clone of gasnow.org
 
 ## Quickstart
 
-The application connects to infura to get data from its ethereum full node. In order to do so the following env variables need to be setup in a `.env` file:
+The application connects to infura to get data from its ethereum full node and to coingecko to get market data. In order to do so the following env variables need to be setup (they can be placed in a `.env` file):
 ```.env
 INFURA_URL=https://mainnet.infura.io/v3
 INFURA_PROJECT=<your_project_id>
+GECKO_URL=https://api.coingecko.com/api/v3
 ```
 
 To start the app during development

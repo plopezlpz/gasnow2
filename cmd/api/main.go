@@ -13,6 +13,9 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/pkg/errors"
 	"github.com/plopezlpz/gasnow2/cmd/api/handler"
+	"github.com/plopezlpz/gasnow2/coingecko"
+	"github.com/plopezlpz/gasnow2/gas"
+	"github.com/plopezlpz/gasnow2/infura"
 )
 
 func main() {
@@ -29,6 +32,10 @@ func run() error {
 	infuraHost := os.Getenv("INFURA_URL")
 	if infuraHost == "" {
 		return fmt.Errorf("INFURA_URL missing")
+	}
+	geckoUrl := os.Getenv("GECKO_URL")
+	if geckoUrl == "" {
+		return fmt.Errorf("GECKO_URL missing")
 	}
 	infuraProject := os.Getenv("INFURA_PROJECT")
 	if infuraProject == "" {
@@ -58,7 +65,8 @@ func run() error {
 		return true // TODO restrict
 	}
 
-	routes(e, handler.NewGas(infuraUrl, &wsUpgrader))
+	gasServer := gas.NewServer(infura.NewClient(infuraUrl), coingecko.NewClient(geckoUrl))
+	routes(e, handler.NewGas(gasServer), handler.NewWS(&wsUpgrader, gasServer))
 	return e.Start(":" + port)
 }
 

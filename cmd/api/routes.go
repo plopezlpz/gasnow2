@@ -9,10 +9,11 @@ import (
 )
 
 // routes sets up all the http routes of the service
-func routes(e *echo.Echo, gasGrp handler.Gas) {
+func routes(e *echo.Echo, gas handler.Gas, ws handler.WS) {
 	e.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, json.RawMessage(`{"ok": "success"}`))
 	})
-	e.GET("/ws", gasGrp.GetPrice)
-	e.GET("/gasprice", gasGrp.GetPriceRest)
+	e.GET("/ws", ws.Subscribe)
+	e.GET("/gasprice", gas.GetGasPrice)
+	e.GET("/currencyprice", gas.GetCurrencyPrice)
 }
