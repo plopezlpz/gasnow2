@@ -17,7 +17,7 @@ func NewClient(url string) Client {
 	}
 }
 
-func (c Client) GetLatestBlock() (Block, error) {
+func (c Client) GetPendingBlock() (Block, error) {
 	var res struct {
 		Result Block `json:"result"`
 	}
@@ -27,7 +27,7 @@ func (c Client) GetLatestBlock() (Block, error) {
 			"id": 1337,
 			"jsonrpc": "2.0",
 			"method": "eth_getBlockByNumber",
-			"params": ["latest", true]
+			"params": ["pending", true]
 		}`).
 		Post(c.url)
 	if err != nil {

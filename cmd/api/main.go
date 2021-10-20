@@ -49,18 +49,21 @@ func run() error {
 	infuraUrl := fmt.Sprintf("%s/%s", infuraHost, infuraProject)
 
 	e := echo.New()
+	e.Use(middleware.Recover())
+	e.Use(middleware.RequestID())
 	e.Use(middleware.CORS()) // TODO restrict
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Skipper: func(c echo.Context) bool {
 			return c.Path() == "/ws"
 		},
 	}))
-	e.Use(middleware.Recover())
-	e.Use(middleware.RequestID())
 
 	e.Logger.SetLevel(logLevel)
 
-	wsUpgrader := websocket.Upgrader{}
+	wsUpgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
 	wsUpgrader.CheckOrigin = func(r *http.Request) bool {
 		return true // TODO restrict
 	}

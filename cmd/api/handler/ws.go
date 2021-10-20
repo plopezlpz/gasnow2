@@ -11,6 +11,10 @@ import (
 	"github.com/plopezlpz/gasnow2/gas"
 )
 
+const (
+	writeWait = 10 * time.Second
+)
+
 type WS struct {
 	upgrader  *websocket.Upgrader
 	gasServer gas.Server
@@ -42,12 +46,14 @@ func (w WS) Subscribe(c echo.Context) error {
 		for {
 			select {
 			case gp := <-gasPrice:
+				ws.SetWriteDeadline(time.Now().Add(writeWait))
 				if err := ws.WriteJSON(gp); err != nil {
 					c.Logger().Error(err)
 					cancel()
 					return
 				}
 			case cp := <-currencyPrice:
+				ws.SetWriteDeadline(time.Now().Add(writeWait))
 				if err := ws.WriteJSON(cp); err != nil {
 					c.Logger().Error(err)
 					cancel()
@@ -62,7 +68,7 @@ func (w WS) Subscribe(c echo.Context) error {
 
 func (w WS) subscribeToGasPrice(ctx context.Context, logger echo.Logger, wg *sync.WaitGroup) <-chan RespGas {
 	out := make(chan RespGas)
-	var lastUpdate int64 = 0
+	// var lastUpdate int64 = 0
 
 	go func() {
 		defer wg.Done()
@@ -78,11 +84,11 @@ func (w WS) subscribeToGasPrice(ctx context.Context, logger echo.Logger, wg *syn
 				time.Sleep(5 * time.Second)
 				continue
 			}
-			if gasPrices.Timestamp == lastUpdate {
-				time.Sleep(5 * time.Second)
-				continue
-			}
-			lastUpdate = gasPrices.Timestamp
+			// if gasPrices.Timestamp == lastUpdate {
+			// 	time.Sleep(5 * time.Second)
+			// 	continue
+			// }
+			// lastUpdate = gasPrices.Timestamp
 			out <- RespGas{
 				Type: "gasprice",
 				Data: gasPrices,

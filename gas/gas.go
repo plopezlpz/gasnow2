@@ -34,7 +34,7 @@ func (s Server) GetGasPrice() (Gas, error) {
 		}
 		return gasCached, nil
 	}
-	block, err := s.infuraClient.GetLatestBlock()
+	block, err := s.infuraClient.GetPendingBlock()
 	if err != nil {
 		return Gas{}, err
 	}
