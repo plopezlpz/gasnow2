@@ -30,7 +30,7 @@ wscat -c ws://localhost:5000/ws
 make build
 
 # Run the newly built executable
-bin/server
+bin/application
 ```
 
 ### Build with Docker
