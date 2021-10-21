@@ -1,6 +1,8 @@
 # Gasnow 2
 Clone of gasnow.org
 
+Web app code [here](https://github.com/plopezlpz/gasnow2-ui)
+
 ## Quickstart
 
 The application connects to infura to get data from its ethereum full node and to coingecko to get market data. In order to do so the following env variables need to be setup (they can be placed in a `.env` file):
