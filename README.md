@@ -1,6 +1,8 @@
 # Gasnow 2
 Clone of gasnow.org
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/plopezlpz/gasnow2)](https://goreportcard.com/report/github.com/plopezlpz/gasnow2)
+
 Web app code [here](https://github.com/plopezlpz/gasnow2-ui)
 
 ## Quickstart
